@@ -2,6 +2,24 @@
 //   Make sure to enforce the same validation rules you have in `Ticket::new`!
 //   Even better, extract that logic and reuse it in both places. You can use
 //   private functions or private static methods for that.
+macro_rules! ensure_not_empty {
+    ($value: expr, $field_name: expr) => {
+        if $value.is_empty() {
+            panic!("{} cannot be empty", $field_name);
+        }
+    };
+}
+
+macro_rules! ensure_string_length {
+    ($value: expr, $field_length: literal, $field_name: expr) => {
+        if $value.len() > $field_length {
+            panic!(
+                "{} cannot be longer than {} bytes",
+                $field_name, $field_length
+            );
+        }
+    };
+}
 
 pub struct Ticket {
     title: String,
@@ -38,12 +56,32 @@ impl Ticket {
         &self.title
     }
 
+    pub fn set_title(&mut self, title: String) {
+        ensure_not_empty!(title, "Title");
+        ensure_string_length!(title, 50, "Title");
+        self.title = title
+    }
+
     pub fn description(&self) -> &String {
         &self.description
     }
 
+    pub fn set_description(&mut self, description: String) {
+        ensure_not_empty!(description, "Description");
+        ensure_string_length!(description, 500, "Description");
+        self.description = description
+    }
+
     pub fn status(&self) -> &String {
         &self.status
+    }
+
+    pub fn set_status(&mut self, status: String) {
+        ensure_not_empty!(status, "Status");
+        if status != "To-Do" && status != "In Progress" && status != "Done" {
+            panic!("Only `To-Do`, `In Progress`, and `Done` statuses are allowed");
+        }
+        self.status = status
     }
 }
 

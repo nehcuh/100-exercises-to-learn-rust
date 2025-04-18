@@ -12,6 +12,42 @@
 // interested in learning more about it.
 // You don't have to though: it's perfectly okay to write three separate
 // implementations manually. Venture further only if you're curious.
+trait Power<T> {
+    fn power(self, pow: T) -> Self;
+}
+
+macro_rules! impl_power {
+    ($base: ty, $exp: ty, $converter: expr) => {
+        impl Power<$exp> for $base {
+            fn power(self, pow: $exp) -> Self {
+                self.pow($converter(pow))
+            }
+        }
+    };
+}
+
+// impl_power!(u32, u16, pow as u32);
+impl_power!(u32, u16, |x| x as u32);
+impl_power!(u32, u32, |x| x);
+impl_power!(u32, &u32, |x: &u32| *x);
+
+// impl Power<u16> for u32 {
+//     fn power(self, pow: u16) -> Self {
+//         self.pow(pow as u32)
+//     }
+// }
+
+// impl Power<u32> for u32 {
+//     fn power(self, pow: u32) -> Self {
+//         self.pow(pow)
+//     }
+// }
+
+// impl Power<&u32> for u32 {
+//     fn power(self, pow: &u32) -> Self {
+//         self.pow(pow.clone())
+//     }
+// }
 
 #[cfg(test)]
 mod tests {
